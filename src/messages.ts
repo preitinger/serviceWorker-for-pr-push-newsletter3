@@ -1,4 +1,10 @@
+//
+// Diese Datei muss immer identisch sein mit serviceWorker-for-pr-push-newsletter3/src/messages.ts bzw. pr-newsletter/app/_lib/client/serviceWorkerMessages.ts
+// insbesondere die Konstante VERSION darin.
+
 import * as rt from "runtypes"
+
+export const VERSION = 3;
 
 export const GetVersionReq = rt.Record({
     type: rt.Literal('getVersion'),
@@ -11,6 +17,8 @@ export const GetVersionRes = rt.Record({
 })
 export type TGetVersionRes = rt.Static<typeof GetVersionRes>
 
-export function logMessages() {
-    console.log('Yeah, messages.ts ;-)')
-}
+export const SkipWaiting = rt.Record({
+    type: rt.Literal('skipWaiting'),
+})
+export type TSkipWaiting = rt.Static<typeof SkipWaiting>
+

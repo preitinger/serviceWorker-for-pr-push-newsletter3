@@ -1,7 +1,5 @@
 // const nodemailer = require("nodemailer");
 
-import { createTransport } from "nodemailer";
-import { logMessages } from "./messages";
 
 console.log('Hello, Test!');
 
@@ -27,7 +25,7 @@ async function main() {
 
     // console.log('info of sendMail:', info);
 
-    logMessages();
+    // logMessages();
 }
 
 main().catch(console.error);

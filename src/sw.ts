@@ -2,7 +2,7 @@
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
 
-import { GetVersionReq, logMessages, TGetVersionRes } from "./messages";
+import { GetVersionReq, SkipWaiting, TGetVersionRes, VERSION } from "./messages";
 import { PushData } from "./PushData";
 
 export type { };
@@ -21,7 +21,7 @@ export type { };
 type Version = number
 const MANIFEST_PATH = '/manifest.webmanifest'
 
-const version: Version = 128
+const version: Version = VERSION;
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -490,6 +490,9 @@ self.addEventListener('message', (e) => {
             e.source.postMessage(res);
             console.debug('sent response to client');
         }
+    } else if (SkipWaiting.guard(e.data)) {
+        console.log('sw: calling skipWaiting()')
+        e.waitUntil(self.skipWaiting());
     } else {
         console.debug('guard failed?!');
     }
