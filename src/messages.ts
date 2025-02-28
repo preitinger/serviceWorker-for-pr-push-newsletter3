@@ -4,7 +4,7 @@
 
 import * as rt from "runtypes"
 
-export const VERSION = 6;
+export const VERSION = 7
 
 export const GetVersionReq = rt.Record({
     type: rt.Literal('getVersion'),
