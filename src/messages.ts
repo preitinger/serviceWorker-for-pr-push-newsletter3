@@ -4,7 +4,8 @@
 
 import * as rt from "runtypes"
 
-export const VERSION = 8
+export const VERSION = 21 // pr-newsletter; muss identisch sein mit SUB_VERSION in app/_lib/client/serviceWorkerMessages.ts
+// export const VERSION = 3 // pr-scheduler
 
 export const GetVersionReq = rt.Record({
     type: rt.Literal('getVersion'),
@@ -21,4 +22,3 @@ export const SkipWaiting = rt.Record({
     type: rt.Literal('skipWaiting'),
 })
 export type TSkipWaiting = rt.Static<typeof SkipWaiting>
-

@@ -1,4 +1,4 @@
 #!/bin/sh
 
-cp -i dist/* ../pr-scheduler/public/
+cp dist/* ../pr-scheduler/public/
 
