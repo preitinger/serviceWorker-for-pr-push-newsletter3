@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "scripts": {
     "build": "webpack --mode production",
-    "copy": "./copyTo_pr-newsletter.sh",
-    "build & copy": "webpack --mode production && ./copyTo_pr-newsletter.sh",
+    "copy to pr-newsletter": "./copyTo_pr-newsletter.sh",
+    "ENTFERNT:build & copy": "webpack --mode production && ./copyTo_pr-newsletter.sh",
     "copy to pr-scheduler": "./copyTo_pr-scheduler.sh",
     "start": "webpack serve --progress --color",
     "test": "webpack --config webpack.test.config.js"
