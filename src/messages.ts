@@ -4,8 +4,8 @@
 
 import * as rt from "runtypes"
 
-export const VERSION = 22 // pr-newsletter; muss identisch sein mit SUB_VERSION in app/_lib/client/serviceWorkerMessages.ts
-// export const VERSION = 15 // pr-scheduler
+export const VERSION = 29 // pr-newsletter; muss identisch sein mit SUB_VERSION in app/_lib/client/serviceWorkerMessages.ts
+// export const VERSION = 16 // pr-scheduler
 
 export const GetVersionReq = rt.Record({
     type: rt.Literal('getVersion'),
