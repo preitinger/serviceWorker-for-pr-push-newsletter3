@@ -1,25 +1,25 @@
 {
-  "name": "vanilla",
-  "main": "sw.js",
-  "version": "1.0.0",
-  "scripts": {
-    "build": "webpack --mode production",
-    "copy to pr-newsletter": "./copyTo_pr-newsletter.sh",
-    "ENTFERNT:build & copy": "webpack --mode production && ./copyTo_pr-newsletter.sh",
-    "copy to pr-scheduler": "./copyTo_pr-scheduler.sh",
-    "start": "webpack serve --progress --color",
-    "test": "webpack --config webpack.test.config.js"
-  },
-  "devDependencies": {
-    "ts-loader": "^9.5.1",
-    "typescript": "^5.6.2",
-    "webpack": "^5.94.0",
-    "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.1.0"
-  },
-  "dependencies": {
-    "@types/nodemailer": "^6.4.16",
-    "nodemailer": "^6.9.15",
-    "runtypes": "^6.7.0"
-  }
+    "name": "vanilla",
+    "main": "sw.js",
+    "version": "1.0.0",
+    "scripts": {
+        "build": "webpack --mode production",
+        "copy to pr-newsletter": "./copyTo_pr-newsletter.sh",
+        "ENTFERNT:build & copy": "webpack --mode production && ./copyTo_pr-newsletter.sh",
+        "copy to pr-scheduler": "./copyTo_pr-scheduler.sh",
+        "start": "webpack serve --progress --color",
+        "test": "webpack --config webpack.test.config.js"
+    },
+    "devDependencies": {
+        "ts-loader": "^9.5.1",
+        "typescript": "^5.6.2",
+        "webpack": "^5.94.0",
+        "webpack-cli": "^5.1.4",
+        "webpack-dev-server": "^5.1.0"
+    },
+    "dependencies": {
+        "@types/nodemailer": "^6.4.16",
+        "nodemailer": "^6.9.15",
+        "runtypes": "^7.0.4"
+    }
 }

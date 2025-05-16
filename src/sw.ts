@@ -458,12 +458,15 @@ self.addEventListener('push', (e) => {
         // tag: 'pr-webRTC call',
         requireInteraction: true,
         silent: false,
-        icon: pushData.icon,
+        // icon: pushData.icon,
         // icon: '/accept-call-64x64.png'
     } : {
         body: 'Unexpected push event (pr-webrtc)',
         // silent: false,
         // icon: '/accept-call-64x64.png'
+    }
+    if (pushData?.icon) {
+        notificationOptions.icon = pushData.icon;
     }
     const title = PushData.guard(pushData) ? pushData.title : 'Fehlerhafte PushMsg';
     const promise1 = self.registration.showNotification(title, notificationOptions);
