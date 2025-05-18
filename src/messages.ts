@@ -1,11 +1,7 @@
 //
 // Diese Datei muss immer identisch sein mit serviceWorker-for-pr-push-newsletter3/src/messages.ts bzw. pr-newsletter/app/_lib/client/serviceWorkerMessages.ts
-// insbesondere die Konstante VERSION darin.
 
 import * as rt from "runtypes"
-
-// export const VERSION = 29 // pr-newsletter; muss identisch sein mit SUB_VERSION in app/_lib/client/serviceWorkerMessages.ts
-export const VERSION = 23 // pr-scheduler
 
 export const GetVersionReq = rt.Object({
     type: rt.Literal('getVersion'),

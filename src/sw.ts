@@ -2,8 +2,9 @@
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
 
-import { GetVersionReq, SkipWaiting, TGetVersionRes, VERSION } from "./messages";
+import { GetVersionReq, SkipWaiting, TGetVersionRes } from "./messages";
 import { PushData } from "./PushData";
+import { VERSION } from "./version";
 
 export type { };
 
