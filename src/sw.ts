@@ -366,7 +366,9 @@ self.addEventListener('activate', e => {
     e.waitUntil(
         cacheState.then(s => {
             myAssert(s.newCache != null);
-            return caches.delete(cacheName((s.newCache + 1) % 3));
+            const name = cacheName((s.newCache + 1) % 3);
+            console.log('deleting cache', name);
+            return caches.delete(name).then((value) => console.log('result of caches.delete:', value));
         })
     )
 })
