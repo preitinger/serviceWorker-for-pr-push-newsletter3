@@ -1,5 +1,5 @@
-//
-// Diese Datei muss immer identisch sein mit serviceWorker-for-pr-push-newsletter3/src/messages.ts bzw. pr-newsletter/app/_lib/client/serviceWorkerMessages.ts
+
+// Diese Datei muss immer identisch sein mit serviceWorker-for-pr-push-newsletter3/src/messages.ts bzw. app/_lib/submodules-pr-lib-sw/serviceWorkerMessages.ts
 
 import * as rt from "runtypes"
 

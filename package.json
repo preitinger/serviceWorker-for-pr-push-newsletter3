@@ -3,6 +3,7 @@
     "main": "sw.js",
     "version": "1.0.0",
     "scripts": {
+        "configure": "./configure.sh $@",
         "build": "webpack --mode production",
         "copy to pr-newsletter": "./copyTo_pr-newsletter.sh",
         "ENTFERNT:build & copy": "webpack --mode production && ./copyTo_pr-newsletter.sh",
@@ -19,6 +20,7 @@
     },
     "dependencies": {
         "@types/nodemailer": "^6.4.16",
+        "mongodb": "^6.16.0",
         "nodemailer": "^6.9.15",
         "runtypes": "^7.0.4"
     }

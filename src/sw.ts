@@ -2,9 +2,10 @@
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
 
+import { VERSION } from "../generated/version";
 import { GetVersionReq, SkipWaiting, TGetVersionRes } from "./messages";
 import { PushData } from "./PushData";
-import { VERSION } from "./version";
+import { TO_LOAD } from "./toLoad";
 
 export type { };
 
@@ -19,10 +20,8 @@ export type { };
 
 
 
-type Version = number
 const MANIFEST_PATH = '/manifest.webmanifest'
-
-const version: Version = VERSION;
+const version = VERSION;
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -49,6 +48,7 @@ async function cacheState_detect(): Promise<TCacheState> {
     const has0 = caches.has(cacheName(0))
     const has1 = caches.has(cacheName(1))
     const has2 = caches.has(cacheName(2))
+    // mylog('cacheState_detect: has0', await has0, 'has1', await has1, 'has2', await has2);
     if (await has0) {
         if (await has1) {
             if (await has2) {
@@ -132,20 +132,20 @@ function fetchNetworkFirst(request: Request): Promise<Response> {
                 return newCache.match(request).then(response => {
                     if (response != undefined) {
                         // console.debug('response from new cache', response)
-                        console.debug(request.url, 'found in new cache');
+                        // console.debug(request.url, 'found in new cache');
                         return response;
                     }
-                    console.debug(request.url, 'not found in new cache, old cache...');
+                    // console.debug(request.url, 'not found in new cache, old cache...');
                     // try old cache
                     if (s.oldCache == null) {
-                        console.error('no old cache, so no response for', request.url);
+                        // console.error('no old cache, so no response for', request.url);
                         return Response.error();
                     }
                     return caches.open(cacheName(s.oldCache)).then(oldCache => {
                         return oldCache.match(request).then(response => {
                             if (response != undefined) {
                                 // console.debug('response from old cache put to new cache', response)
-                                console.debug(request.url, 'found in old cache (and put into new cache)')
+                                // console.debug(request.url, 'found in old cache (and put into new cache)')
                                 newCache.put(request, response.clone());
                                 return response;
                             } else {
@@ -203,10 +203,17 @@ function fetchNetworkFirst(request: Request): Promise<Response> {
 // }
 
 self.addEventListener('fetch', event => {
+    const selfHost = self.location.host;
+    const url = new URL(event.request.url);
+    const isOwnHost = selfHost === url.host;
+
+    // console.debug('fetch', url.toString(), 'method', event.request.method);
+
     // neu:
-    if (event.request.method !== 'GET') return;
+    if (event.request.method === 'POST') return;
+
     if (event.request.url.includes('?_rsc=')) {
-        console.debug('default behavior for', event.request.url);
+        // console.debug('default behavior for', event.request.url);
         return; // default behavior
     }
 
@@ -218,10 +225,6 @@ self.addEventListener('fetch', event => {
         return; // default behavior
     }
 
-    const selfHost = self.location.host;
-    const url = new URL(event.request.url);
-    console.debug('fetch', url.toString());
-    const isOwnHost = selfHost === url.host;
     // console.debug('selfHost', selfHost, 'url.host', url.host);
     if (!isOwnHost) {
         return; // default browser behavior
@@ -229,55 +232,74 @@ self.addEventListener('fetch', event => {
 
     const res = cacheState.then(s => {
         // console.debug('fetch: cacheState=', s);
-        if (s.newCache == null) return Response.error()
+        if (s.newCache == null) return Response.error();
+
+        mylog('in Event "fetch": gonna use cache with name ', cacheName(s.newCache));
+
         const newCacheProm = caches.open(cacheName(s.newCache))
         const res = newCacheProm.then(newCache => {
-            const res = newCache.match(event.request).then(response => {
+            // mylog('vor match mit ignoreVary fuer ', event.request);
+            const res = newCache.match(event.request, {
+                ignoreVary: false
+            }).then(response => {
                 if (response != undefined) {
                     // console.debug('response from new cache', response)
-                    console.debug(event.request.url, 'found in new cache');
+                    // mylog(event.request.url, 'found in new cache', s.newCache);
                     return response;
                 }
-                console.debug(event.request.url, 'not found in new cache, old cache...');
+
+                mylog('Cache miss for ', event.request);
+
+                // Das Konzept mit der Wiederverwendung des alten Caches ist gut gemeint, aber zu gefaehrlich. Wenn ein Chunk im alten Cache fehlt und nachgeladen werden soll, wird er im Server nicht gefunden.
+                // Das vernuenftig aufzuloesen waere so aufwaendig dass es sich nicht wirklich lohnt.
+
+                // mylog(event.request.url, 'not found in new cache, old cache...');
+                // if (s.oldCache == null) {
+                return fetchFromNetworkPutToNewCache()
+                // }
+                // commented out because to unsafe:
                 // try old cache
-                if (s.oldCache == null) {
-                    return fetchFromNetworkPutToNewCache()
-                }
-                const res = caches.open(cacheName(s.oldCache)).then(oldCache => {
-                    return oldCache.match(event.request).then(response => {
-                        if (response != undefined) {
-                            const etag = response.headers.get('ETag');
-                            if (etag == null) return fetchFromNetworkPutToNewCache();
-                            const newRequest = new Request(event.request);
-                            newRequest.headers.set('If-None-Match', etag);
-                            console.debug('fetch with If-None-Match for', event.request.url, 'new request object', newRequest);
-                            return fetch(newRequest).then(networkResponse => {
-                                if (networkResponse.ok) {
-                                    console.debug('ok response, put it to newCache ', networkResponse.url)
-                                    newCache.put(event.request, networkResponse.clone())
-                                    return networkResponse;
-                                } else if (networkResponse.status === 304) {
-                                    console.debug('304 response, return stale entry of old cache, but do not put it to new cache')
-                                    return response;
-                                } else {
-                                    throw new Error('Unexpected network response status: ' + networkResponse.status);
-                                }
-                            })
-                        } else {
-                            return fetchFromNetworkPutToNewCache();
-                        }
-                    })
-                })
-                return res;
+                // const res = caches.open(cacheName(s.oldCache)).then(oldCache => {
+                //     return oldCache.match(event.request).then(response => {
+                //         if (response != undefined) {
+                //             const etag = response.headers.get('ETag');
+                //             if (etag == null) return fetchFromNetworkPutToNewCache();
+                //             const newRequest = new Request(event.request);
+                //             newRequest.headers.set('If-None-Match', etag);
+                //             console.debug('fetch with If-None-Match for', event.request.url, 'new request object', newRequest);
+                //             return fetch(newRequest).then(networkResponse => {
+                //                 if (networkResponse.ok) {
+                //                     console.debug('ok response, put it to newCache ', networkResponse.url)
+                //                     newCache.put(event.request, networkResponse.clone())
+                //                     return networkResponse;
+                //                 } else if (networkResponse.status === 304) {
+                //                     console.debug('304 response, return stale entry of old cache, but do not put it to new cache')
+                //                     return response;
+                //                 } else {
+                //                     throw new Error('Unexpected network response status: ' + networkResponse.status);
+                //                 }
+                //             })
+                //         } else {
+                //             return fetchFromNetworkPutToNewCache();
+                //         }
+                //     })
+                // })
+                // return res;
             })
             return res;
 
             function fetchFromNetworkPutToNewCache(): Response | PromiseLike<Response> {
                 console.debug('fetch from network', event.request.url);
                 const res = fetch(event.request).then(response => {
-                    if (!response.ok) throw new Error('network response was not ok for: ' + event.request.url);
+                    if (!response.ok) {
+                        // mylog('calling skipWaiting because of fetch error; probably a file was requested that does no longer exist after an update');
+                        return self.skipWaiting().then(() => {
+                            throw new Error('network response was not ok for: ' + event.request.url);
+                        });
+                    }
+                    mylog('headers in response from network for ', response.url, ':', response.headers);
                     // console.debug('response from network put to new cache', response);
-                    console.debug(event.request.url, 'got by network (and put into new cache');
+                    // mylog(event.request.url, 'got by network (and put into new cache');
                     newCache.put(event.request, response.clone());
                     return response;
                 });
@@ -339,36 +361,51 @@ self.addEventListener('install', e => {
     // self.skipWaiting();
 
     e.waitUntil(
-        cacheState.then(s => {
+        cacheState.then(async s => {
             s = cacheState_cycle(s)
             cacheState = Promise.resolve(s)
-            const allToCache = [...PRE_CACHE, ...PRE_CACHE2];
             myAssert(s.newCache != null);
+
+            const allToCache = (await TO_LOAD).map(encodeURI) //[...PRE_CACHE, ...PRE_CACHE2];
+            // mylog('allToCache', allToCache);
+            if (allToCache == undefined) {
+                console.error('Could not load from MongoDb sw.sw');
+                return;
+            }
+            // return caches.open(cacheName(s.newCache)).then(cache => {
+            //     let next = 0;
+            //     function cacheNext(): Promise<void> {
+            //         console.debug('cacheNext: next=', next);
+            //         mylog('will cache', next, 'in cache', s.newCache);
+            //         myAssert(allToCache != undefined);
+            //         if (next >= allToCache.length) return Promise.resolve();
+            //         const caching = allToCache[next++]
+            //         return cache.add(caching).then(cacheNext).catch(() => {
+            //             console.error('could not cache', caching);
+            //             return cacheNext();
+            //         })
+            //     }
+            //     // return cache.addAll(allToCache);
+            //     return cacheNext();
+            // })
             return caches.open(cacheName(s.newCache)).then(cache => {
-                let next = 0;
-                function cacheNext(): Promise<void> {
-                    console.debug('cacheNext: next=', next);
-                    if (next >= allToCache.length) return Promise.resolve();
-                    const caching = allToCache[next++]
-                    return cache.add(caching).then(cacheNext).catch(() => {
-                        console.error('could not cache', caching);
-                        return cacheNext();
-                    })
-                }
-                // return cache.addAll(allToCache);
-                return cacheNext();
+                mylog('Start caching ...', allToCache);
+                return cache.addAll(allToCache).then(() => mylog('Caching done.'));
             })
         }))
 })
 
 self.addEventListener('activate', e => {
-    // console.debug('handling activate event for version', version);
+    console.debug('handling activate event for version', version);
     e.waitUntil(
         cacheState.then(s => {
             myAssert(s.newCache != null);
             const name = cacheName((s.newCache + 1) % 3);
-            console.log('deleting cache', name);
-            return caches.delete(name).then((value) => console.log('result of caches.delete:', value));
+            mylog('deleting cache', name);
+            return caches.delete(name).then((value) => {
+                mylog('result of caches.delete:', value);
+                return
+            });
         })
     )
 })
@@ -497,9 +534,13 @@ self.addEventListener('message', (e) => {
             console.debug('sent response to client');
         }
     } else if (SkipWaiting.guard(e.data)) {
-        console.log('sw: calling skipWaiting()')
+        mylog('sw: calling skipWaiting()')
         e.waitUntil(self.skipWaiting());
     } else {
         console.debug('guard failed?!');
     }
 })
+
+function mylog(...args: unknown[]) {
+    console.log(`[${version}]`, ...args);
+}
