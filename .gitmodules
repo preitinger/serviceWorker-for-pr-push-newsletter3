@@ -1,0 +1,3 @@
+[submodule "src/submodules/pr-lib-sw-utils"]
+	path = src/submodules/pr-lib-sw-utils
+	url = git@github.com:preitinger/pr-lib-sw-utils.git
