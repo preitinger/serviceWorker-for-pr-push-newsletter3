@@ -2,7 +2,7 @@
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
 
-import { VERSION } from "../generated/version";
+import { PROJECT, VERSION } from "../generated/version";
 import { GetVersionReq, SkipWaiting, TGetVersionRes } from "./messages";
 import { PushData } from "./PushData";
 import { TO_LOAD } from "./toLoad";
@@ -26,9 +26,9 @@ const version = VERSION;
 declare const self: ServiceWorkerGlobalScope;
 
 console.debug = () => { }
-console.info('Custom service worker functions for pr-newsletter: version=', version);
+console.info(`Custom service worker functions for ${PROJECT}: version=`, version);
 
-const CACHE_PREFIX = 'pr-newsletter-cache-';
+const CACHE_PREFIX = PROJECT + '-cache-';
 
 type TCacheState = {
     oldCache: number | null;
@@ -334,27 +334,27 @@ self.addEventListener('fetch', event => {
 });
 
 
-const CACHE_NAME = 'pr-newsletter-cache_v1'
-const PRE_CACHE = ['/', '/favicon.ico', '/manifest.webmanifest']
-const PRE_CACHE2: string[] = [
-    // "/_next/static/chunks/117-e2e453979b05c14c.js"
-    // , "/_next/static/chunks/139-358b2cb6930bb649.js"
-    // , "/_next/static/chunks/821-15c475abf6aee938.js"
-    // , "/_next/static/chunks/889-38e65d1e11cf0d72.js"
-    // , "/_next/static/chunks/972-354db0c52b4639ba.js"
-    // , "/_next/static/chunks/app/install/page-28a37d307b193e9d.js"
-    // , "/_next/static/chunks/app/layout-a28c289a9fe378a0.js"
-    // , "/_next/static/chunks/app/newsletterSettings/page-3a93d75f682b638d.js"
-    // , "/_next/static/chunks/app/_not-found/page-acf7c1e8ed93a8f9.js"
-    // , "/_next/static/chunks/app/overview/page-2c3be4ab46170cd9.js"
-    // , "/_next/static/chunks/app/page-1b1718be1be69873.js"
-    // , "/_next/static/chunks/app/verify-email/[email]/[secret]/page-c3934906379f5d1e.js"
-    // , "/_next/static/chunks/fd9d1056-ee845b033c65438d.js"
-    // , "/_next/static/chunks/main-app-8e1f1dc68201c22b.js"
-    // , "/_next/static/chunks/webpack-e4a661ced2e0834a.js"
-    // , "/_next/static/css/27b4d6b789fddb24.css"
-    // , "/_next/static/css/e5f550f3c35a9c69.css"
-]
+// const CACHE_NAME = 'pr-newsletter-cache_v1'
+// const PRE_CACHE = ['/', '/favicon.ico', '/manifest.webmanifest']
+// const PRE_CACHE2: string[] = [
+//     // "/_next/static/chunks/117-e2e453979b05c14c.js"
+//     // , "/_next/static/chunks/139-358b2cb6930bb649.js"
+//     // , "/_next/static/chunks/821-15c475abf6aee938.js"
+//     // , "/_next/static/chunks/889-38e65d1e11cf0d72.js"
+//     // , "/_next/static/chunks/972-354db0c52b4639ba.js"
+//     // , "/_next/static/chunks/app/install/page-28a37d307b193e9d.js"
+//     // , "/_next/static/chunks/app/layout-a28c289a9fe378a0.js"
+//     // , "/_next/static/chunks/app/newsletterSettings/page-3a93d75f682b638d.js"
+//     // , "/_next/static/chunks/app/_not-found/page-acf7c1e8ed93a8f9.js"
+//     // , "/_next/static/chunks/app/overview/page-2c3be4ab46170cd9.js"
+//     // , "/_next/static/chunks/app/page-1b1718be1be69873.js"
+//     // , "/_next/static/chunks/app/verify-email/[email]/[secret]/page-c3934906379f5d1e.js"
+//     // , "/_next/static/chunks/fd9d1056-ee845b033c65438d.js"
+//     // , "/_next/static/chunks/main-app-8e1f1dc68201c22b.js"
+//     // , "/_next/static/chunks/webpack-e4a661ced2e0834a.js"
+//     // , "/_next/static/css/27b4d6b789fddb24.css"
+//     // , "/_next/static/css/e5f550f3c35a9c69.css"
+// ]
 
 self.addEventListener('install', e => {
     // console.debug('handling install event for version', version);
