@@ -20,6 +20,7 @@
     },
     "dependencies": {
         "@types/nodemailer": "^6.4.16",
+        "assert": "^2.1.0",
         "mongodb": "^6.16.0",
         "nodemailer": "^6.9.15",
         "runtypes": "^7.0.4"

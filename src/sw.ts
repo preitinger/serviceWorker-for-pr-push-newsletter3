@@ -3,8 +3,8 @@
 /// <reference lib="webworker" />
 
 import { PROJECT, VERSION } from "../generated/version";
-import { GetVersionReq, SkipWaiting, TGetVersionRes } from "./messages";
-import { PushData } from "./PushData";
+import { GetVersionReq, SkipWaiting, TGetVersionRes } from "./submodules/pr-lib-sw-utils/messages";
+import { PushData } from "./submodules/pr-lib-sw-utils/PushData";
 import { TO_LOAD } from "./toLoad";
 
 export type { };

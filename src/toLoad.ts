@@ -1,7 +1,7 @@
 import * as rt from 'runtypes'
-import { PROJECT } from '../generated/version';
+import { PROJECT, VERSION } from '../generated/version';
 
-const repository = PROJECT
+const key = PROJECT + 'v' + VERSION.main + '.' + VERSION.sub;
 const prToCacheUrl = '/api/to-cache';
 
 type SwDoc = {
@@ -13,7 +13,7 @@ export const ToCacheRes = rt.Array(rt.String);
 
 export const TO_LOAD = fetch(prToCacheUrl,
     {
-        body: JSON.stringify(repository),
+        body: JSON.stringify(key),
         method: 'POST'
     }
 ).then(res => res.json()).then(json => ToCacheRes.guard(json) ? json : []).catch(reason => { console.error(reason); return [] })
