@@ -5,9 +5,10 @@
     "scripts": {
         "configure": "./configure.sh $@",
         "build": "webpack --mode production",
-        "copy to pr-newsletter": "./copyTo_pr-newsletter.sh",
+        "ENTFERNT:copy to pr-newsletter": "./copyTo_pr-newsletter.sh",
         "ENTFERNT:build & copy": "webpack --mode production && ./copyTo_pr-newsletter.sh",
-        "copy to pr-scheduler": "./copyTo_pr-scheduler.sh",
+        "ENTFERNT:copy to pr-scheduler": "./copyTo_pr-scheduler.sh",
+        "copy to": "./copyTo.sh $@",
         "start": "webpack serve --progress --color",
         "test": "webpack --config webpack.test.config.js"
     },
