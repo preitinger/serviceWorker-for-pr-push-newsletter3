@@ -20,7 +20,7 @@ fi &&
 
 cd $(dirname $0) &&
 (
-    echo "import { TVersion } from '../src/submodules/pr-lib-sw-utils/sw-utils'
+    echo "import type { TVersion } from '../src/submodules/pr-lib-sw-utils/sw-utils'
 
 export const PROJECT: string = '${project}'
 export const VERSION: TVersion = {
